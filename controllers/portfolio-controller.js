@@ -11,7 +11,6 @@ dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 export default class PortfolioController {
 
     getAllProjects = async (req, res) => {
-        const {email} = await userService.findById(req.session.userId)
         try {
             const allProjects = await projectRepository.findAll();
             const requestOptions = {
@@ -19,36 +18,8 @@ export default class PortfolioController {
                 redirect: "follow"
             };
 
-            let url = `https://v6.exchangerate-api.com/v6/${process.env.EXCHANGE_RATE_API_TOKEN}/latest/USD`;
-
-            const exchangeRateResponse = await fetch(url, requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error('There was a problem with your fetch operation:', error);
-                });
-
-            url = "http://www.boredapi.com/api/activity?type=education"
-            const boredResponse = await fetch(url, requestOptions)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .catch(error => {
-                    console.error('There was a problem with your fetch operation:', error);
-                });
-
             res.render('en/index.ejs', {
                 projects: allProjects,
-                exchangeRate: exchangeRateResponse,
-                boredApi: boredResponse,
-                userEmail: email
             }); // Assuming EJS template named 'projects.ejs'
         } catch (error) {
             console.error(error);
